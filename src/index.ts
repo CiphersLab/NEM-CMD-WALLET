@@ -2,14 +2,15 @@ import {NEMLibrary, NetworkTypes, Password, SimpleWallet} from 'nem-library';
 
 NEMLibrary.bootstrap(NetworkTypes.TEST_NET);
 
-const createSimpleWallet = (password: string): SimpleWallet =>{
-    const pass = new Password(password);
+export const MOSAIC_NAME = 'khanani';
 
-    return SimpleWallet.create('myTestWallet',pass);
+export const createSimpleWallet = (password: string): SimpleWallet =>{
+    const pass = new Password(password);
+    return SimpleWallet.create(`${MOSAIC_NAME}-wallet`,pass);
 };
 
-const firstWallet = createSimpleWallet('12mySampleWallet78');
-console.log(firstWallet);
+// const firstWallet = createSimpleWallet('12mySampleWallet78');
+// console.log(firstWallet);
 
-const myAccount = firstWallet.open(new Password('12mySampleWallet78'));
-console.log(myAccount);
+// const myAccount = firstWallet.open(new Password('12mySampleWallet78'));
+// console.log(myAccount);
