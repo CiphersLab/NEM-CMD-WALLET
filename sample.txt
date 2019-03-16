@@ -1,0 +1,10 @@
+///////Code for Getting Transitions info for Test account//////////
+
+// const accountHttp = new AccountHttp();
+
+// accountHttp.allTransactions(new Address('TAJK3M-2ATRZC-TFS7A5-UCYL33-LWQUBN-6KZSN7-JSM5'))
+// .subscribe(allTransactionsInfo => {
+//     console.log(allTransactionsInfo);
+// })
+
+///
