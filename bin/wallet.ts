@@ -1,5 +1,5 @@
 import { MOSAIC_NAME, createSimpleWallet } from "../src";
-import { Password, SimpleWallet } from 'nem-library';
+import { Password, SimpleWallet, Account } from 'nem-library';
 
 const fs = require('fs');
 const os = require('os');
@@ -9,6 +9,35 @@ const args = process.argv.slice(2);
 const PATH_HOME = `${os.homedir()}/${MOSAIC_NAME}-wallets-dev`;
 const PATH_WALLET = `${PATH_HOME}/${MOSAIC_NAME}-wallet.wlt`;
 
+const openWallet = (wallet: SimpleWallet): Promise<Account> => {
+    return new Promise<Account>((resolve,reject) => {
+        prompt.message = 'wallet login';
+        prompt.start();
+        prompt.get({
+            properties:{
+                password:{
+                    description: 'Password',
+                    hidden: true
+                }
+            }
+        },(_, result) => {
+            const pass = new Password(result.password);
+            try{ 
+                resolve(wallet.open(pass));
+            } catch(err){
+                console.log(`${err}`);
+                console.log('Please try again');
+                reject();
+            }
+        })
+     });
+    
+}
+
+const loadWallet = () : SimpleWallet => {
+    const contents = fs.readFileSync(PATH_WALLET);
+    return SimpleWallet.readFromWLT(contents);
+};
 
 const downloadWallet = (wallet: SimpleWallet) => {
     console.log('\nDownloading wallet for your convenience. \n' + 
@@ -21,7 +50,7 @@ const downloadWallet = (wallet: SimpleWallet) => {
     }
     let fullPath = PATH_WALLET;
     if(fs.existsSync(fullPath)){
-        const stamp = new Date().toISOString();
+        const stamp = new Date().toISOString(); 
         fullPath = `${PATH_HOME}/${stamp}-${MOSAIC_NAME}-wallet.wlt`;    
     }
     fs.writeFileSync(fullPath, wallet.writeWLTFile());
@@ -69,6 +98,10 @@ const main = async () => {
             createWallet();
         }
     }
+
+    const wallet = loadWallet();
+    const account = await openWallet(wallet);
+    console.log(account);
 };
 
 main();
