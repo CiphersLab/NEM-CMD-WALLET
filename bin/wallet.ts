@@ -1,5 +1,6 @@
-import { MOSAIC_NAME, createSimpleWallet } from "../src";
+import { MOSAIC_NAME, createSimpleWallet, getAccountBalances, mosaicBalance, xemBalance } from "../src";
 import { Password, SimpleWallet, Account } from 'nem-library';
+
 
 const fs = require('fs');
 const os = require('os');
@@ -43,8 +44,8 @@ const downloadWallet = (wallet: SimpleWallet) => {
     console.log('\nDownloading wallet for your convenience. \n' + 
     'Please store someplace safe. The private key is encrypted by your password.\n'+
     'To load this wallet on a new computer you would simply import the .wlt file into this app and enter your password and you will be able to sign transactions');
-    // console.log(PATH_HOME);
-    // console.log(PATH_WALLET);
+    
+
     if(!fs.existsSync(PATH_HOME)){
         fs.mkdirSync(PATH_HOME);
     }
@@ -92,16 +93,40 @@ const createWallet = () => {
     });
 };
 
+
+const printBalance = async (account: Account) => {
+    const balances = await getAccountBalances(account);
+    const mosaic =  mosaicBalance(balances);
+    const xem = xemBalance(balances);
+    const address = account.address.pretty();
+    const bal = (mosaic/ 1e6).toString();
+    const xemBal = (xem/ 1e6).toString();
+
+    console.log(`Khanani: ${bal}`);
+    console.log(`XEM: ${xemBal}`);
+    console.log(`Public Address: ${address}`);
+};
+
 const main = async () => {
     if(args[0] === 'wallet'){
         if(args[1] === 'create'){
             createWallet();
         }
+    }else if(args[0] === 'balance'){
+        try{
+            const wallet = loadWallet();
+            const account = await openWallet(wallet);    
+            printBalance(account);
+            
+        } catch(err){
+            console.log(err);
+        }
+        
     }
 
-    const wallet = loadWallet();
-    const account = await openWallet(wallet);
-    console.log(account);
+    // const wallet = loadWallet();
+    // const account = await openWallet(wallet);
+    // console.log(account);
 };
 
 main();
